@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style_test.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <title>Flood Forecasting</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:['corechart']});
+      google.charts.setOnLoadCallback(drawChart_bar);
+      google.charts.setOnLoadCallback(drawChart_pie);
+      
+      function drawChart_bar() {
+        var data = google.visualization.arrayToDataTable([
+          ["Element", "Temperature", { role: "style" } ],
+          ["2014", 1033.7, "black"],
+          ["2015", 1093.2, "black"],
+          ["2016", 1083.1, "black"],
+          ["2017", 1127.1, "black"],
+          ["2018", 1020.8, "black"],
+          ["2019", 1250.1, "black"]
+        ]);
+  
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1,
+                         { calc: "stringify",
+                           sourceColumn: 1,
+                           type: "string",
+                           role: "annotation" },
+                         2]);
+  
+        var options = {
+          title: "Amount of rainfall measured across India from 2014 to 2019 (in millimeters)",
+          width: 750,
+          height: 450,
+          bar: {groupWidth: "40%"},
+          legend: { position: "none" },
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+        chart.draw(view, options);
+      }
+
+
+        function drawChart_pie() {
+
+       var data2 = google.visualization.arrayToDataTable([
+       ['States', 'Flood risk'],
+       ['Uttar Pradesh',     21.9],
+       ['Assam',      9.40],
+       ['Bihar',  12.71],
+       ['Other States', 48.08],
+       ['West Bengal',    7.91]
+       
+       ]);
+
+       var options2 = {
+         title: 'Statewise Flood Risk in India',
+         width: 500,
+         height: 450,
+       };
+
+      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+      chart.draw(data2, options2);
+    }
+    </script>
+</head>
+<body>
+
+    <h1 id="title">Flood Forecasting</h1>
+    <hr>
+
+    <!--<div class="about-area">
+    <h2 id="about">About</h2>
+    <p class="para">Flood forecasting is the use of forecasted precipitation and streamflow data in rainfall-runoff and streamflow routing models to forecast flow rates and water levels for periods ranging from a few hours to days ahead, depending on the size of the watershed or river basin.</p>
+    </div>-->
+    
+    <div class="container">
+        <div class="container-item"><img class="img" src="linechart.jpg" alt="Line chart image"></div>
+        <div class="container-item">
+        <strong>Statistics</strong><br>According to the statistics, 68% of India’s land is prone to drought, 60% to earthquakes, 12% to floods and 8% to cyclones, making India one of the most disaster prone countries in the world, affecting overall 85% of Indian land and more than 50 million people. There have been countless disasters both natural and man-made, where millions of lives have been lost.
+        </div>
+    </div>
+  
+    <div class="container" style="flex-direction: row">
+        <div class="container-item"><img class="img"  src="predict.jpg" alt="Line chart image"></div>
+        <div class="container-item"><strong>Prediction</strong><br>Flood forecasting allows flood control managers to predict, with a high degree of accuracy, when local flooding is likely to take place. Forecasts typically use storm runoff data, reservoir levels and releases to predict the rise in river levels.Real-time flood forecasting at regional area can be done within seconds by using effective real-time flood forecasting models could be useful for early warning and disaster prevention.
+        </div>
+    </div>
+    <br>
+    <div>
+        <h1 style="text-align: center;">Statistics</h1>
+        <hr>
+        <br>
+        <table class="columns">
+            <tr>
+              <td><div id="columnchart_values" style="border: 1px solid #ccc"></div></td>
+              <td><div id="piechart" style="border: 1px solid #ccc"></div></td>
+            </tr>
+          </table>
+        
+    </div>
+
+    <br>
+    <section>
+        <h1 style="text-align: center;"> Data Plotting</h1>
+<div class="row" style="padding:10px 10px 10px 10px;">
+<div class="jumbotron" style="height:600px;margin-left:20px;margin-right:20px;border-radius:20px;width:1000px;">
+    <p> Ultrasonic Water level Sensor </p>
+    <hr>
+    <label>Choose the date:-</label><input type = "date"  id="demo1">   
+    <button class="btn btn-success" type="button" onclick="plotd()">Plot data</button>
+    <br><br>
+    <div id="chartContainer1"></div>
+</div>
+
+</div>
+
+
+<script type="text/javascript">
+    function plotd() {
+    var selectedDate=document.getElementById("demo1").value;
+    console.log(selectedDate);
+    const Http = new XMLHttpRequest();
+    const url1='https://test-6cd12.firebaseio.com/Distance_above_MSL_data.json';
+   
+
+    Http.onreadystatechange = () => {
+        if (Http.readyState == 4 && Http.status == 200) {
+            console.log(Http.responseText);
+            var resData=JSON.parse(Http.responseText);
+            console.log(resData);
+            var i;
+            var plotData=[];
+
+            for(i=0;i<resData.length;i++) {
+                var y=resData[i]['reading']
+                if(resData[i]['date']==selectedDate){
+                var temp1=resData[i]['date'].split('-');
+                var temp2=resData[i]['time'].split(':');
+                var x=new Date(temp1[0],temp1[1]-1,temp1[2],temp2[0],temp2[1]);
+
+                console.log(x,y);
+                plotData.push({x:x,y:y});
+                }
+                
+            }
+            
+            //console.log(plotData);
+            if(plotData.length!=0){
+                var chart = new CanvasJS.Chart("chartContainer1",
+                {
+                    title:{
+                        text: "Distance above mean sea level plot"
+                        
+                    },
+                    axisX:{
+                        gridColor: "black" ,
+                        gridThickness: 1       
+                    },
+                    axisY:{        
+                        gridColor: "black"
+                    },
+                    data: [
+                        {
+                            type: "line",
+
+                            dataPoints: plotData
+                        }
+
+                    ]
+                });
+
+                chart.render();
+            }
+            else{
+                document.getElementById("chartContainer1").innerHTML="No data available for this date."
+            }
+        } 
+    }
+    Http.open("GET", url1);
+  
+    Http.send();
+    
+}
+
+</script>
+
+
+
+
+
+
+
+    </section>
+    
+
+    <br> 
+    <hr>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="/__/firebase/8.6.8/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<!-- Initialize Firebase -->
+      <script src="/__/firebase/init.js"></script>
+
+
+    
+</body>
+</html>
